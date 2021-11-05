@@ -2,8 +2,7 @@ from django.urls import path
 from django.urls.conf import include
 from rest_framework.routers import DefaultRouter
 
-from .views import ListOrPostAPIView, GetOrEditAPIView
-
+from .views import GetOrEditAPIView, ListOrPostAPIView
 
 app_name = 'api'
 
