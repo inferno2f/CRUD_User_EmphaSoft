@@ -6,7 +6,7 @@ from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value: str) -> str:
-        """ Converts password from str to hashed value """
+        ''' Converts password from str to hashed value '''
         return make_password(value, hasher='default')
 
     class Meta:
