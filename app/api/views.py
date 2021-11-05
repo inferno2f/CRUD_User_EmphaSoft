@@ -1,24 +1,28 @@
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, permissions
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from .models import User
+from .permissions import IsAuthUserOrReadOnly
 from .serializers import UserSerializer
 
 
-class GetOrPostAPI(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class ListOrPostAPIView(mixins.CreateModelMixin,
+                        mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
+    """ API that returns a list of all users or allows to create a new one """
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-            'user': UserSerializer(user, context=self.get_serializer_context()).data,
-            'message': 'User successfully added.',
-        })
 
-    def list(self, request):
-        queryset = User.objects.all()
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
+class GetOrEditAPIView(mixins.RetrieveModelMixin,
+                       mixins.UpdateModelMixin,
+                       mixins.DestroyModelMixin,
+                       viewsets.GenericViewSet):
+    """
+    API available only through Token auth
+    Allows to retrieve, update or delete information about a user
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated, IsAuthUserOrReadOnly)
