@@ -5,6 +5,8 @@ from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_active = serializers.BooleanField(default=True)
+
     def validate_password(self, value: str) -> str:
         ''' Converts password from str to hashed value '''
         return make_password(value, hasher='default')
